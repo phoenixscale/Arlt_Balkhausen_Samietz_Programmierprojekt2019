@@ -164,7 +164,7 @@ public class Dijkstra {
 					offset++;
 				}
 			
-			if (priorityQueueLength == 0) {				// nicht verbunden
+			if (priorityQueueLength == 0) {
 				for (int ctr = 0; ctr < targets.length; ctr++)
 					if (distanceArray[targets[ctr]] == Integer.MAX_VALUE) {
 						distanceArray[targets[ctr]] = -1;
