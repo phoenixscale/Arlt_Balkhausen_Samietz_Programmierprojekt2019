@@ -15,7 +15,7 @@ public class Benchmark {
 	
 	public static int calculateDifference(File map, File que, File sol) {
 		
-		// Utility.startTimer();		
+		Utility.startTimer();		
 		// Data.initialize(map);
 		// Data.readAndWrite();
 		
