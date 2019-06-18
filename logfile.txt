@@ -1,15 +1,2 @@
 This is the logfile for our routeplanner.
 
-Reading data from file completed in 42.587756424 seconds.
-Reading questions from file germany.que completed in 0.023507185 seconds.
-Reading solution from file germany.sol completed in 0.001899519 seconds.
-Source node 8371825 paths calculated in 21.174341008 seconds.
-Source node 8371826 paths calculated in 21.216559222 seconds.
-Source node 8371827 paths calculated in 30.435006761 seconds.
-Source node 8371828 paths calculated in 30.2197365 seconds.
-Source node 8371829 paths calculated in 30.325154672 seconds.
-Source node 8371830 paths calculated in 30.101007935 seconds.
-Source node 8371831 paths calculated in 332.720422259 seconds.
-Source node 8371832 paths calculated in 334.178194766 seconds.
-Source node 8371833 paths calculated in 347.865596246 seconds.
-Source node 8371834 paths calculated in 353.536388456 seconds.
