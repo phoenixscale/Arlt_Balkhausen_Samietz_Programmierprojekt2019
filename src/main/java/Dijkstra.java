@@ -7,9 +7,9 @@ public class Dijkstra {
 	private static int amountOfEdges, amountOfNodes;
 	
 	private static boolean[] inPriorityQueue, minimalDistanceFound;
-	private static int priorityQueueLength;	//	repräsentiert die Lände der priorityQueue
-	private static int[] priorityQueue;	//	enthält Verweise auf distanceArray
-	private static int[] distanceArray;	//	enthält Abstände von sourceNode zu entsprechender Node
+	private static int priorityQueueLength;	//	repraesentiert die Laende der priorityQueue
+	private static int[] priorityQueue;	//	enthaelt Verweise auf distanceArray
+	private static int[] distanceArray;	//	enthaelt Abstaende von sourceNode zu entsprechender Node
 
 	/**
 	 * calculates the distance from the source to the target
@@ -179,7 +179,7 @@ public class Dijkstra {
 				
 				finished = true;
 				
-				// falls für nur 1 target kein ergebniss gefunden wurde, ist die Suche NICHT beendet
+				// falls fuer nur 1 target kein ergebniss gefunden wurde, ist die Suche NICHT beendet
 				for (int target : targets) {
 					if (!minimalDistanceFound[target]) {
 						finished = false;
@@ -198,7 +198,7 @@ public class Dijkstra {
 	/**
 	 * minHeap sortierer
 	 * 
-	 * sortiert die ersten n = nodesToVisit nodes der PrioQueue anhand der Länge
+	 * sortiert die ersten n = nodesToVisit nodes der PrioQueue anhand der Laenge
 	 * x = distanceArray[prioQueue[i]] von der Node i
 	 * 
 	 */
@@ -212,7 +212,7 @@ public class Dijkstra {
 		
 		int parentPointer = priorityQueue[firstParentNode];
 
-		// bei erstem durchlauf ArrayOutOfBounds möglich, deswegen seperater durchlauf mit extra if-Abfrage
+		// bei erstem durchlauf ArrayOutOfBounds moeglich, deswegen seperater durchlauf mit extra if-Abfrage
 		if (childNode < priorityQueueLength &&
 				distanceArray[parentPointer] > distanceArray[priorityQueue[childNode]]) {
 			priorityQueue[firstParentNode] = priorityQueue[childNode];

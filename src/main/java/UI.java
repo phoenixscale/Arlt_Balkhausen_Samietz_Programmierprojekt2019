@@ -95,8 +95,10 @@ public class UI {
 			System.out.println("The EndNode you chose is not on the map!");
 			return;
 		}
-
-		Dijkstra.setSourceAndTarget(a, b);// insert variables in method
+		
+		System.out.println("Calculating distance from " + a + " to " + b + ".");
+		int tempDistance = Dijkstra.setSourceAndTarget(a, b); // insert variables in method
+		System.out.println("Distance between " + a + " and " + b + " is " + tempDistance + ".");
 	}
 
 	public void oneToAll() {
