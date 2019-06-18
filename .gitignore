@@ -3,6 +3,8 @@
 
 # fmi files
 *.fmi
+*.sol
+*.que
 
 ### Eclipse ###
 .metadata
