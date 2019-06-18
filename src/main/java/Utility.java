@@ -28,7 +28,6 @@ public class Utility {
 	 * This method initializes the logfile-writer.
 	 */
 	public static void initialize() {
-		startTimer();
 		logFile = new File("logfile.txt");
 		try {
 			logFile.createNewFile();
@@ -79,5 +78,10 @@ public class Utility {
 	 */
 	public static FileWriter getLogFileWriter() {
 		return logfileWriter;
+	}
+	
+	public static File stringToFile(String filePath) {
+		File file=new File(filePath);
+		return file;
 	}
 }
