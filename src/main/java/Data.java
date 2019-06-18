@@ -111,6 +111,7 @@ public class Data {
 	public static void initialize(File map) {
 
 		Utility.startTimer();
+		System.out.println("Map is being initialized, please wait.");
 		// initializing the scanner
 		try {
 			reader = new BufferedReader(new FileReader(map));
@@ -138,7 +139,8 @@ public class Data {
 
 		// reading the data of the .fmi file
 		readAndWrite();
-		Window.eventWindow.setText("Data Structures for the map are set.");
+		System.out.println(nodeAmount + "\t" + edgeAmount);
+		//Window.eventWindow.setText("Data Structures for the map are set.");
 		System.out.println("Data structures setup in " + Utility.endTimer() + " seconds.");
 	}
 
