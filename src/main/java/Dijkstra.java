@@ -1,309 +1,111 @@
+import java.util.Arrays;
+
 public class Dijkstra {
-	
-	private static int pivotSource;
-	
-	private static int[] edgeOffset, startNodeID, endNodeID, edgeValue;
-	
-	private static int amountOfEdges, amountOfNodes;
-	
-	private static boolean[] inPriorityQueue, minimalDistanceFound;
-	private static int priorityQueueLength;	//	repraesentiert die Laende der priorityQueue
-	private static int[] priorityQueue;	//	enthaelt Verweise auf distanceArray
-	private static int[] distanceArray;	//	enthaelt Abstaende von sourceNode zu entsprechender Node
+	private int[] prev;
+	private boolean[] finished;
+	private Heap heap;
+	private Graph graph;
 
 	/**
-	 * calculates the distance from the source to the target
-	 * 
-	 * @param source
-	 * @param target
-	 * @return distance from source to target
+	 * Constructor for the class Dijkstra
 	 */
-	public static int setSourceAndTarget(int source, int target) {
-		
-		edgeOffset = Data.getOffsetArray();
-		startNodeID = Data.getStartNodeIDArray();
-		endNodeID = Data.getEndNodeIDArray();
-		edgeValue = Data.getEdgeValueArray();
-		
-		amountOfNodes = edgeOffset.length;
-		amountOfEdges = endNodeID.length;
-		
-		priorityQueueLength = 1;
+	public Dijkstra(Graph graph) {
+		this.graph = graph;
+		heap = new Heap(graph.getNodeCount()); // create priority queue
+		prev = new int[graph.getNodeCount()];
+		finished = new boolean[graph.getNodeCount()];
 
-		inPriorityQueue = new boolean[amountOfNodes];
-		minimalDistanceFound = new boolean[amountOfNodes];
-		priorityQueue = new int[amountOfNodes];
-		distanceArray = new int[amountOfNodes];
-		
-		for (int ctr = 0; ctr < distanceArray.length; ctr++)
-			distanceArray[ctr] = Integer.MAX_VALUE;
-		
-		priorityQueue[0] = source;
-		distanceArray[source] = 0;
-		
-
-		while (true) {
-			
-			int closestNode = priorityQueue[0];
-			int tempDist = distanceArray[closestNode];
-			int closestNodeTarget = -1;
-			int offset = edgeOffset[closestNode];
-			
-			minimalDistanceFound[closestNode] = true;
-			
-			if (offset != -1)
-				while (offset != amountOfEdges && closestNode == startNodeID[offset]) {
-					closestNodeTarget = endNodeID[offset];
-					
-					// verhindert Schleifen
-					if (!minimalDistanceFound[closestNodeTarget])
-						if (distanceArray[closestNodeTarget] > tempDist + edgeValue[offset]) {
-							distanceArray[closestNodeTarget] = tempDist + edgeValue[offset];
-							
-							// falls noch nicht in priorityQueue, Aufnahme in diese
-							if (!inPriorityQueue[closestNodeTarget]) {
-								priorityQueue[priorityQueueLength] = closestNodeTarget;
-								priorityQueueLength++;
-								inPriorityQueue[closestNodeTarget] = true;
-							}
-						}
-					offset++;
-				}
-			
-			if (priorityQueueLength == 0)
-				return -1;
-			
-			priorityQueueLength--;
-			priorityQueue[0] = priorityQueue[priorityQueueLength];
-			inPriorityQueue[closestNode] = false;
-			
-			minHeapSort();
-			
-			if (distanceArray[target] < distanceArray[priorityQueue[0]])
-				return distanceArray[target];
-		}
 	}
 
 	/**
-	 * Sets a pivot source for other methods
-	 * 
-	 * @param sourceToSet
+	 * One-to-all Dijkstra implementation
 	 */
-	public static void setPivotSource(int sourceToSet) {
-		pivotSource = sourceToSet;
-	}
-	
-	/**
-	 * calculates the distance from the pivot source to the given target
-	 * 
-	 * @param target
-	 * @return distance between pivotSource to target
-	 */
-	public static int fromPivotSourceToTarget(int target) {
-		return setSourceAndTarget(pivotSource, target);
-	}
+	@SuppressWarnings("Duplicates")
+	public void dijkstra(int start) {
+		if (!heap.isEmpty())
+			heap.flush();
+		heap.setEmpty(false);
+		Arrays.fill(finished, false);
+		this.heap.insert(start, 0); // insert first node
 
-	
-	/**
-	 * calculates the distance from the pivot source to multiple targets
-	 * 
-	 * @param targets
-	 * @return distance between pivotSource to multiple targets
-	 */
-	public static int[] fromPivotSourceToTargets(int[] targets) {
-		
-		boolean finished = false;
-		
-		edgeOffset = Data.getOffsetArray();
-		startNodeID = Data.getStartNodeIDArray();
-		endNodeID = Data.getEndNodeIDArray();
-		edgeValue = Data.getEdgeValueArray();
-		
-		amountOfNodes = edgeOffset.length;
-		amountOfEdges = endNodeID.length;
-		
-		priorityQueueLength = 1;
+		while (heap.getSize() > 0) {
+			int finishedNode = heap.deleteMin();
+			int finishedValue = heap.getValueOf(finishedNode);
+			finished[finishedNode] = true;
+			int offset = graph.getOffsetOf(finishedNode);
+			if (offset == -1)
+				continue;
+			while (offset < graph.getEdgeCount() && graph.getSourceOf(offset) == finishedNode) {
+				int destination = graph.getDestinationOf(offset);
+				int weight = graph.getWeight(offset);
+				offset++;
 
-		inPriorityQueue = new boolean[amountOfNodes];
-		minimalDistanceFound = new boolean[amountOfNodes];
-		priorityQueue = new int[amountOfNodes];
-		distanceArray = new int[amountOfEdges];
-		
-		for (int ctr = 0; ctr < distanceArray.length; ctr++)
-			distanceArray[ctr] = Integer.MAX_VALUE;
-		
-		priorityQueue[0] = pivotSource;
-		distanceArray[pivotSource] = 0;
-		
-		
-		while (true) {
-			
-			int closestNode = priorityQueue[0];
-			int tempDist = distanceArray[closestNode];
-			int closestNodeTarget = -1;
-			int offset = edgeOffset[closestNode];
-			
-			minimalDistanceFound[closestNode] = true;
-			
-			if (offset != -1)
-				while (offset != amountOfEdges && closestNode == startNodeID[offset]) {
-					closestNodeTarget = endNodeID[offset];
-					
-					// verhindert Schleifen
-					if (!minimalDistanceFound[closestNodeTarget])
-						if (distanceArray[closestNodeTarget] > tempDist + edgeValue[offset]) {
-							distanceArray[closestNodeTarget] = tempDist + edgeValue[offset];
-							
-							// falls noch nicht in priorityQueue, Aufnahme in diese
-							if (!inPriorityQueue[closestNodeTarget]) {
-								priorityQueue[priorityQueueLength] = closestNodeTarget;
-								priorityQueueLength++;
-								inPriorityQueue[closestNodeTarget] = true;
-							}
-						}
-					offset++;
-				}
-			
-			if (priorityQueueLength == 0) {
-				for (int ctr = 0; ctr < targets.length; ctr++)
-					if (distanceArray[targets[ctr]] == Integer.MAX_VALUE) {
-						distanceArray[targets[ctr]] = -1;
-						minimalDistanceFound[targets[ctr]] = true;
-					}
-			} else {
-				priorityQueueLength--;
-				priorityQueue[0] = priorityQueue[priorityQueueLength];
-				inPriorityQueue[closestNode] = false;
-				
-				minHeapSort();
-				
-				finished = true;
-				
-				// falls fuer nur 1 target kein ergebniss gefunden wurde, ist die Suche NICHT beendet
-				for (int target : targets) {
-					if (!minimalDistanceFound[target]) {
-						finished = false;
-						break;
+				if (finished[destination])
+					continue;
+				if (heap.getValueOf(destination) == -1) {
+					heap.insert(destination, finishedValue + weight);
+				} else {
+					if (heap.getValueOf(finishedNode) + weight < heap.getValueOf(destination)) {
+						heap.decreaseKey(destination, finishedValue + weight);
 					}
 				}
+
 			}
-			if (finished) {
-				for (int ctr = 0; ctr < targets.length; ctr++)
-					targets[ctr] = distanceArray[targets[ctr]];
-				return targets;
-			}
+
 		}
 	}
-		
+
 	/**
-	 * minHeap sortierer
-	 * 
-	 * sortiert die ersten n = nodesToVisit nodes der PrioQueue anhand der Laenge
-	 * x = distanceArray[prioQueue[i]] von der Node i
-	 * 
+	 * One-to-one Dijkstra implementation
 	 */
-	private static void minHeapSort() {
-		
-		if (priorityQueueLength == 0)
-			return;
-		
-		int firstParentNode = (priorityQueueLength - 2) / 2;
-		int childNode = firstParentNode * 2 + 2;
-		
-		int parentPointer = priorityQueue[firstParentNode];
+	@SuppressWarnings("Duplicates")
+	public void dijkstra(int start, int destination) {
+		if (!heap.isEmpty())
+			heap.flush();
+		heap.setEmpty(false);
+		Arrays.fill(finished, false);
+		Arrays.fill(prev, -1); // Initialize distances with "infinite"
+		this.heap.insert(start, 0); // insert first node
 
-		// bei erstem durchlauf ArrayOutOfBounds moeglich, deswegen seperater durchlauf mit extra if-Abfrage
-		if (childNode < priorityQueueLength &&
-				distanceArray[parentPointer] > distanceArray[priorityQueue[childNode]]) {
-			priorityQueue[firstParentNode] = priorityQueue[childNode];
-			priorityQueue[childNode] = parentPointer;
-			
-			parentPointer = priorityQueue[firstParentNode];
-		}
-		
-		childNode--;
-
-		if (childNode < priorityQueueLength &&
-				distanceArray[parentPointer] > distanceArray[priorityQueue[childNode]]) {
-			priorityQueue[firstParentNode] = priorityQueue[childNode];
-			priorityQueue[childNode] = parentPointer;
-		}
-		
-		
-		
-		for (int parentNode = firstParentNode - 1; parentNode != -1; parentNode--) {
-			childNode--;
-			parentPointer = priorityQueue[parentNode];
-
-			if (distanceArray[parentPointer] > distanceArray[priorityQueue[childNode]]) {
-				priorityQueue[parentNode] = priorityQueue[childNode];
-				priorityQueue[childNode] = parentPointer;
-				
-				parentPointer = priorityQueue[parentNode];
-			}
-			
-			childNode--;
-
-			if (distanceArray[parentPointer] > distanceArray[priorityQueue[childNode]]) {
-				priorityQueue[parentNode] = priorityQueue[childNode];
-				priorityQueue[childNode] = parentPointer;
-			}
-		}
-	}
-	
-	public static void nodesConnectedTo(int source) {
-		Utility.startTimer();
-		
-		edgeOffset = Data.getOffsetArray();
-		endNodeID = Data.getEndNodeIDArray();
-		
-		amountOfNodes = edgeOffset.length;
-		amountOfEdges = endNodeID.length;
-		
-		priorityQueue = new int[amountOfNodes];
-		priorityQueue[0] = source;
-		priorityQueueLength = 1;
-		
-		int reachableNodes = 0;
-		boolean[] alreadyVisited = new boolean[amountOfNodes];
-		
-		alreadyVisited[0] = true;
-
-		while (true) {
-			int currNode = priorityQueue[0];
-			int currNodeEdgesFrom = edgeOffset[currNode];
-			int currNodeEdgesTo;
-			
-			if (currNodeEdgesFrom != -1) {
-				if (currNode + 1 == amountOfNodes)
-					currNodeEdgesTo = amountOfEdges;
-				else
-					currNodeEdgesTo = edgeOffset[currNode + 1];
-
-				for (int ctr = currNodeEdgesFrom; ctr < currNodeEdgesTo; ctr++) {
-
-					if (!alreadyVisited[endNodeID[ctr]]) {
-						reachableNodes++;
-						alreadyVisited[endNodeID[ctr]] = true;
-						priorityQueue[priorityQueueLength] = endNodeID[ctr];
-						priorityQueueLength++;
-					}
-				}
-			}
-			
-			if (priorityQueueLength == 0) {
-				System.out.println(reachableNodes + "/" + amountOfNodes + " edges are reachable from " + source);
-				System.out.println(Utility.endTimer());
-				
-				for (int i = 0; i < alreadyVisited.length; i++)
-					if (!alreadyVisited[i] && i == 200)
-						System.out.println(i);
+		while (heap.getSize() > 0) {
+			int finishedNode = heap.deleteMin(); // get node with shortest path
+			if (finishedNode == destination)
 				return;
+			int finishedValue = heap.getValueOf(finishedNode);
+			finished[finishedNode] = true;
+			int offset = graph.getOffsetOf(finishedNode);
+			if (offset == -1)
+				continue;
+			while (offset < graph.getEdgeCount() && graph.getSourceOf(offset) == finishedNode) {
+				int dest = graph.getDestinationOf(offset);
+				int weight = graph.getWeight(offset);
+				offset++;
+
+				if (finished[dest])
+					continue;
+				if (heap.getValueOf(dest) == -1) {
+					heap.insert(dest, finishedValue + weight);
+					prev[dest] = finishedNode;
+				} else {
+					if (heap.getValueOf(finishedNode) + weight < heap.getValueOf(dest)) {
+						heap.decreaseKey(dest, finishedValue + weight);
+						prev[dest] = finishedNode;
+					}
+				}
+
 			}
-			
-			priorityQueueLength--;
-			priorityQueue[0] = priorityQueue[priorityQueueLength];
+
 		}
 	}
 
+	/**
+	 * This method returns the distance from the used start to the destination given
+	 * in the parameter
+	 * 
+	 * @param destination
+	 * @return int
+	 */
+	public int getDistanceTo(int destination) {
+		return heap.getValueOf(destination);
+	}
 }

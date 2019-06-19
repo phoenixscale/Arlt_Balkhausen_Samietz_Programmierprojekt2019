@@ -80,8 +80,4 @@ public class Utility {
 		return logfileWriter;
 	}
 	
-	public static File stringToFile(String filePath) {
-		File file=new File(filePath);
-		return file;
-	}
 }
